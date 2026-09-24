@@ -1,0 +1,23 @@
+# Local development only. Every generated Eaststream stream key is accepted as
+# an RTMP path. Add HTTP/JWT auth and TLS before exposing this server publicly.
+rtmp: true
+api: true
+authInternalUsers:
+  # Keep publishing and playback open for this local-development configuration.
+  - user: any
+    pass:
+    permissions:
+      - action: publish
+      - action: read
+      - action: playback
+      - action: api
+hls: true
+hlsVariant: lowLatency
+hlsAllowOrigins: ["http://localhost:3000"]
+webrtc: true
+webrtcAllowOrigins: ["http://localhost:3000"]
+webrtcAdditionalHosts: ["localhost"]
+
+paths:
+  all_others:
+    source: publisher

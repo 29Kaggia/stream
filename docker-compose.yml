@@ -1,0 +1,31 @@
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:1.21.0
+    container_name: eaststream-mediamtx
+    restart: unless-stopped
+    environment:
+      EASTSTREAM_MEDIA_WEBHOOK_SECRET: ${EASTSTREAM_MEDIA_WEBHOOK_SECRET:?Set this to the same value used by the backend}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "1935:1935" # RTMP ingest from OBS
+      - "8888:8888" # HLS playback for the web app
+      - "8889:8889" # WebRTC playback UI
+      - "8189:8189/udp" # WebRTC media for browser camera streaming
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml:ro
+  media-status-bridge:
+    image: python:3.13-alpine
+    container_name: eaststream-media-status-bridge
+    restart: unless-stopped
+    depends_on:
+      - mediamtx
+    environment:
+      EASTSTREAM_MEDIA_WEBHOOK_SECRET: ${EASTSTREAM_MEDIA_WEBHOOK_SECRET:?Set this to the same value used by the backend}
+      EASTSTREAM_MEDIA_WEBHOOK_URL: http://host.docker.internal:8765/api/media/stream-status
+      MEDIAMTX_API_URL: http://mediamtx:9997/v3/paths/list
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./scripts/media_status_bridge.py:/app/media_status_bridge.py:ro
+    command: ["python", "/app/media_status_bridge.py"]

@@ -1,0 +1,16 @@
+# Secrets and local config
+.env
+.env.*
+!.env.example
+backend/config/app_local.php
+
+# Dependencies and build output
+frontend/node_modules/
+frontend/.next/
+backend/vendor/
+
+# Local/runtime files
+*.log
+.DS_Store
+
+__pycache__/
