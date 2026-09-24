@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 import { Search } from "lucide-react";
 
 type Category = { id: number; name: string; slug: string; description?: string };
@@ -14,6 +14,10 @@ function initial(name: string) { return (name.match(/\p{L}/u)?.[0] || "E").toUpp
 function compact(value: number) { return new Intl.NumberFormat("en", { notation: "compact" }).format(value); }
 
 export default function DiscoverPage() {
+  return <Suspense fallback={<main className="creator-state">Loading discovery…</main>}><DiscoverContent /></Suspense>;
+}
+
+function DiscoverContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("q") ?? "";
